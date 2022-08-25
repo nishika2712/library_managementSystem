@@ -1,0 +1,483 @@
+<?php
+session_start();
+if(!$_SESSION['login']){
+	header ("LOCATION:regforblog.php");
+}
+?>
+
+<!doctype html>
+<html>
+<head>
+
+<style>
+
+table , th , td{
+
+	align : left;
+	padding : 15px;
+}
+</style>
+<title>
+My Blog</title>
+</head>
+
+<script>
+function validateForm() {
+    var x = document.forms["form1"]["title"].value;
+	var y = document.forms["form1"]["content"].value;
+
+    if (x == null || x == "") {
+        alert("Title must be filled out");
+        return false;
+    }
+	else if (y == null || y == ""){
+		alert("Content must be filled out");
+        return false;
+	}
+
+	else {
+		return true;
+	}
+
+}
+</script>
+
+<script src ="ckeditor/ckeditor.js" ></script >
+
+<body style = "background-color:antiquewhite;" >
+<form  method = "post" id = "1" name = "form1"    >
+<div style="text-align: center">
+<img src = "a.jpg"  width = "450" height = "50">
+<h2 align = "center" > BLOG </h2>
+<table align = "center" border : 1px grey; width = "550" >
+<tr>
+ <th>Title :&nbsp </th>
+  <td> <input type = "text"  name = "title" pattern ="[A-Za-z0-9]{30}" title = "No Special Characters"
+  style = " width:650px; "  value = ""  > </td>
+  </tr>
+  <tr>
+ <th>Content :&nbsp </th>
+  <td> &nbsp <textarea class= "ckeditor" rows = "15" cols = "100" name="content" maxlength = "2000000" > </textarea></td>
+  </tr>
+ </table>
+
+</div>
+
+ &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp
+ <p align = "center">
+ <button type="button" onclick="return OnButton1();" >&nbsp Draft &nbsp </button>
+   &nbsp &nbsp &nbsp &nbsp
+   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+   <button type="button" onclick="return OnButton2();">Publish</button>
+     &nbsp &nbsp &nbsp &nbsp
+   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+   <button type="button" onclick="return OnButton3();" >My Blogs</button>
+    &nbsp &nbsp &nbsp &nbsp
+   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+   <button type="button" onclick="return OnButton4();" >All Blogs</button>
+
+
+   </p>
+   </form><br>
+  <div style="text-align: center">
+ <h3><a href="./logout.php">Logout</a></h3></div>
+
+
+ <?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "mydb";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+ $p1=$p2=$p3=$p4=$p5=$p6=$p7= "";
+
+if($_SERVER["REQUEST_METHOD"]=="POST")
+{
+if(!empty($_POST["firstname"])){
+ $p1=$_POST["firstname"];
+}
+if(!empty($_POST["lastname"])){
+ $p2 = $_POST["lastname"];
+}
+if(!empty($_POST["bday"])){
+ $p3 = $_POST["bday"];
+}
+if(!empty($_POST["occupation"])){
+ $p4 = $_POST["occupation"];
+}
+if(!empty($_POST["gender"])){
+ $p5 = $_POST["gender"];
+}
+if(!empty($_POST["username"])){
+ $p6 = $_POST["username"];
+}
+if(!empty($_POST["password"])){
+ $p7 = $_POST["password"];
+}
+}
+		$sql = "SELECT * FROM blog WHERE username='$p6'
+			AND password = '$p7'";
+
+
+			$result = $conn->query($sql);
+
+		if(!$row = $result->fetch_assoc() )
+		{
+			if(!empty($p1)&&!empty($p2)&&!empty($p3)&&!empty($p4)&&!empty($p5)&&!empty($p6)&&!empty($p7)){
+			$sqlm = "INSERT INTO blog (firstname, lastname,bday,occupation,gender,username,password)
+			VALUES ('$p1','$p2','$p3','$p4','$p5','$p6','$p7')";
+
+				if ($conn->query($sqlm) === TRUE) {
+					echo "New record created successfully";
+					}
+					else {
+							echo "Error: " . $sqlm . "<br>" . $conn->error;}
+
+			}
+		}
+		else{
+
+			header("LOCATION:loginblog.php");
+			}
+
+
+
+ $par1=$par2= "";
+
+if($_SERVER["REQUEST_METHOD"]=="POST")
+{
+if(!empty($_POST["title"])){
+ $par1=$_POST["title"];
+}
+if(!empty($_POST["content"])){
+ $par2 = $_POST["content"];
+}
+
+}
+
+ $stat = "Saved";
+$i=$_SESSION['logedinuser'];
+settype($i, "integer");
+
+if(!empty($par1)&&!empty($par2)&&!empty($stat)){
+	$sqlm = "INSERT INTO mytable2 (title, content,status,a) VALUES ('$par1','$par2','$stat','$i')";
+
+if ($conn->query($sqlm) === TRUE) {
+    echo "New record created successfully";
+} else {
+    echo $i."Error: " . $sqlm . "<br>" . $conn->error;
+}
+}
+$conn->close();
+?>
+
+   <script language="Javascript">
+<!--
+function OnButton1()
+{ if(validateForm()){
+    document.form1.action = "blog2.php"
+    document.form1.target = "";    // Open in a new window
+    document.form1.submit();             // Submit the page
+   	return true;
+}
+}
+
+function OnButton2()
+{ if(validateForm()){
+    document.form1.action = "publish.php"
+    document.form1.target = "";    // Open in a new window
+    document.form1.submit();             // Submit the page
+   	return true;
+
+}
+}
+
+function OnButton3()
+{
+    document.form1.action = "view.php"
+    document.form1.target = "";
+    document.form1.submit();             // Submit the page
+	return true;
+
+}
+function OnButton4()
+{
+    document.form1.action = "vieall.php"
+    document.form1.target = "";
+    document.form1.submit();             // Submit the page
+	return true;
+
+}
+-->
+</script>
+
+</body>
+</html>
+Connecting PHP:
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "mydb";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+$SQL="
+ ALTER TABLE mytable2 ADD
+FOREIGN KEY (author) REFERENCES blog(id)";
+
+ if ($conn->query($SQL) === TRUE) {
+    echo "Table MyGuests created successfully";
+} else {
+    echo "Error creating table: " . $conn->error;
+}
+?>
+Display PHP:
+<html>
+<body>
+<div align="center" style="border:1px solid red">
+
+
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "sheetal";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+     die("Connection failed: " . $conn->connect_error);
+}
+
+$sql = "SELECT * from blog";
+$result = $conn->query($sql);
+?>
+<table style="width:100%">
+<tr>
+<td><h2>Title</h2></td>
+<td><h2>Content</h2></td>
+<td><h2>Date</h2></td>
+<td><h2>Status</h2></td>
+
+</tr><br>
+<?php
+if ($result->num_rows > 0) {
+     // output data of each row
+     while($row = $result->fetch_assoc())
+	 {
+?>
+	 <tr>
+	 <td><?php echo $row["TITLE"];  ?></td>
+	  <td><?php echo $row["CONTENT"];  ?></td>
+	   <td><?php echo $row["DATE"];  ?></td>
+	   <td><?php echo $row["STATUS"];  ?></td>
+		   <td><a href = "view.php?id=<?php echo  $row["id"]; ?>"> READ </a></td>
+		   <td><a href = "edit.php?id=<?php echo  $row["id"]; ?>"> EDIT </a></td>
+
+		   </tr>
+
+<?php
+}}
+$conn->close();
+?>
+</div>
+</body>
+</html>
+Draft PHP
+if(isset($_REQUEST['title'])){
+$t=$_REQUEST['title'];
+$c=$_REQUEST['comment'];
+$d=$_REQUEST['date'];
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "sheetal";
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error)
+    die("Connection failed: " . $conn->connect_error);
+
+
+$sql = "INSERT INTO blog VALUES( '$t','$c','$d','Draft');";
+
+if ($conn->query($sql) == TRUE)
+{
+    echo "New blog created successfully";
+
+}
+ else {
+    echo "there is some error";}
+
+	$conn->close();
+
+exit();}
+?>
+<a href="display.php">List blogs</a>
+
+</body>
+</html>
+Edit PHP:
+<?php
+session_start();
+if(!$_SESSION['login']){
+	header ("LOCATION:regforblog.php");
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+table , th , td{
+
+	align : left;
+	padding : 15px;
+}
+</style>
+<title>
+My Blog</title>
+</head>
+<script>
+function validateForm() {
+    var x = document.forms["form1"]["title"].value;
+	var y = document.forms["form1"]["content"].value;
+    if (x == null || x == "") {
+        alert("Title must be filled out");
+        return false;
+    }
+	else if (y == null || y == ""){
+		alert("Content must be filled out");
+        return false;
+	}
+}
+</script>
+<body style = "background-color:antiquewhite;" >
+
+<?php
+
+		if(isset($_REQUEST['id'])) $blog_id = $_REQUEST['id'];
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "mydb";
+
+		// Create connection
+		$conn = new mysqli($servername, $username, $password, $dbname);
+		// Check connection
+		if ($conn->connect_error) {
+		    die("Connection failed: " . $conn->connect_error);
+		}
+		if(isset($blog_id)){
+			$sql = "select * FROM mytable2 WHERE id = '$blog_id'";
+			$result=$conn->query($sql);
+			$row = $result->fetch_assoc();
+			       $t=$row["id"];
+					$c=$row["Title"];
+					$d=$row["content"];
+					$s=$row["status"];
+
+		}
+		?>
+		<form  method = "post"  name = "form1"    >
+<div style="text-align: center">
+<img src = "a.jpg"  width = "450" height = "70"><br>
+<h1 align = "center" > BLOG </h1>
+<table align = "center" border : 1px grey; width = "650" >
+<tr>
+ <th>Title :&nbsp </th>
+  <td> <input type = "text" name="c" value= <?php if(isset($c)) echo $c?> style = " width:400px; "   > </td>
+  </tr>
+  <tr>
+ <th>Content :&nbsp </th>
+  <td> &nbsp <textarea rows = "14" cols = "60" name="d" maxlength = "20000" value="<?php if(isset($d)) echo $c?>" ><?php if(isset($d)) echo $d?> > </textarea></td>
+  </tr>
+ </table><br><br>
+
+</div>
+
+ &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp
+ <p align = "center">
+ <button type="button" onclick="return OnButton1();" >&nbsp Draft &nbsp </button>
+   &nbsp &nbsp &nbsp &nbsp
+   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+   <button type="button" onclick="return OnButton2();">Publish</button>
+     &nbsp &nbsp &nbsp &nbsp
+   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+   <button type="button" onclick="return OnButton3();" >ViewAll</button>
+
+   </p>
+   </form>
+   <div style="text-align: center">
+ <h3><a href="./logout.php">Logout</a></h3></div>
+	   <br><br>
+
+	   <?php
+	   if(isset($_POST['t'])){
+	   $t=$_POST['t'];
+	   $c=$_POST['c'];
+	   $d=$_POST['d'];
+	   $s=$_POST['s'];
+	   $b_id = $_POST['b_id'];
+
+
+
+	   $sql = "UPDATE mytable2 SET Title='$c',status='$s', content='$d' WHERE id=$b_id ";
+        if ($conn->query($sql) === TRUE) {
+        echo "Record updated successfully";
+       } else {
+        echo "Error updating record: " . $conn->error;
+              }
+			 		$conn->close();
+		}else{
+			//echo "wrong input";
+		}
+        ?>
+
+    <script language="Javascript">
+<!--
+function OnButton1()
+{ if(validateForm()){
+    document.form1.action = "blog2.php"
+    document.form1.target = "_blank";    // Open in a new window
+    document.form1.submit();             // Submit the page
+   	return true;
+}
+}
+
+function OnButton2()
+{ if(validateForm()){
+    document.form1.action = "publish.php"
+    document.form1.target = "_blank";    // Open in a new window
+    document.form1.submit();             // Submit the page
+   	return true;
+
+}}
+function OnButton3()
+{
+    document.form1.action = "vieall.php"
+    document.form1.target = "_blank";    // Open in a new window
+    document.form1.submit();             // Submit the page
+	return true;
+
+}
+-->
+</script>
+
+		</div>
+		</body>
+		</html>
